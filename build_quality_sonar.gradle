@@ -25,7 +25,7 @@ dependencies {
 	compile 'junit:junit:4.11'
 }
 war{
-	baseName = "lloydsapp"
+	baseName = "todo"
 	version = "1.0"
 	extension = "war"
 	includeEmptyDirs = false

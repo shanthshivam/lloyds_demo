@@ -25,7 +25,7 @@ dependencies {
     functTestRuntime "$seleniumGroup:selenium-firefox-driver:$seleniumVersion"
 }
 war{
-	baseName = "lloydsapp"
+	baseName = "todo"
 	version = "1.0"
 	extension = "war"
 	includeEmptyDirs = false
