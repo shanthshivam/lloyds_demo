@@ -1,0 +1,82 @@
+buildscript {
+  repositories {
+    maven {
+      url "https://plugins.gradle.org/m2/"
+    }
+  }
+  dependencies {
+
+    classpath "org.sonarqube.gradle:gradle-sonarqube-plugin:1.1"
+    classpath 'com.h2database:h2:1.3.170'
+    classpath 'junit:junit:4.11'		    
+  }
+}
+apply plugin: 'war'
+apply plugin: 'org.sonarqube'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	providedCompile "javax.servlet:servlet-api:2.5"
+	compile("commons-io:commons-io:2.4")
+	compile 'javax.inject:javax.inject:1'
+	compile 'junit:junit:4.11'
+}
+war{
+	baseName = "lloydsapp"
+	version = "1.0"
+	extension = "war"
+	includeEmptyDirs = false
+}
+
+sonarqube {
+    properties {
+	property "sonar.host.url", "http://localhost:9099"
+	property "sonar.jdbc.url", "jdbc:h2:tcp://localhost:9095/sonar"
+	property "sonar.jdbc.username", "sonar"
+	property "sonar.jdbc.password", "sonar"
+        property 'sonar.projectName', 'todo'
+        property 'sonar.projectDescription', 'A task management application'
+	property 'sonar.sourceEncoding', 'UTF-8'
+    }
+}
+
+
+task startbuild(dependsOn: 'sonarqube' ) <<{
+ 
+	println " I AM SURE YOU ARE GOING TO RUN THIS"
+}
+
+apply from: 'databaseSetup.gradle'
+
+
+sourceSets {
+    integrationTest {
+        java.srcDir file('src/integTest/java')
+        resources.srcDir file('src/integTest/resources')
+        compileClasspath = sourceSets.main.output + configurations.testRuntime
+        runtimeClasspath = output + compileClasspath
+    }
+}
+
+task integrationTest(type: Test) {
+    description = 'Runs the integration tests.'
+    group = 'verification'
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+}
+
+tasks.withType(Test) {
+    testLogging {
+        showStandardStreams = true
+        exceptionFormat 'full'
+    }
+}
+
+startDatabase.dependsOn test
+integrationTest.dependsOn startAndPrepareDatabase
+stopDatabase.dependsOn integrationTest
+check.dependsOn stopDatabase
+

@@ -1,0 +1,20 @@
+apply plugin: 'war'
+
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	providedCompile "javax.servlet:servlet-api:2.5"
+	compile("commons-io:commons-io:2.4")
+	compile 'javax.inject:javax.inject:1'
+	compile 'junit:junit:4.11'
+}
+
+war{
+	baseName = "lloydsapp"
+	version = "1.0"
+	extension = "war"
+	includeEmptyDirs = false
+}
